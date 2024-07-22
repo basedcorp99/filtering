@@ -19,18 +19,18 @@ const ScriptCodeDialog = ({ currentEntry, handleCloseDialog }) => {
             <code>&lt;script src=&quot;{fullUrl}&quot;&gt;&lt;/script&gt;</code>
           </a>
         </p>
-        <div className="flex justify-end space-x-2">
-          <button
-            onClick={handleCloseDialog}
-            className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-200"
-          >
-            Close
-          </button>
-          <button
+        <div className="flex justify-begin space-x-2">
+        <button
             onClick={copyToClipboard}
             className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
           >
             Copy Code
+          </button>
+          <button
+            onClick={handleCloseDialog}
+            className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-200"
+          >
+            Close
           </button>
         </div>
       </div>
