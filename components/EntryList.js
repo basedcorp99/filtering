@@ -17,10 +17,11 @@ const EntryList = ({
 
   useEffect(() => {
     let touchTimeout;
+    let entryElement;
 
     const handleTouchStart = (event) => {
+      entryElement = event.target.closest('li');
       touchTimeout = setTimeout(() => {
-        const entryElement = event.target.closest('li');
         if (entryElement) {
           const entryId = entryElement.dataset.entryId;
           if (entryId && !selectMode) {
@@ -28,7 +29,7 @@ const EntryList = ({
             handleSelectEntry(entries.find((entry) => entry.id === parseInt(entryId)));
           }
         }
-      }, 500); // 500ms threshold for long press
+      }, 200); // 200ms threshold for long press
     };
 
     const handleTouchEnd = () => {
@@ -97,6 +98,12 @@ const EntryList = ({
     }
   }, [selectedEntries]);
 
+  const handleClickEntry = (entry) => {
+    if (selectMode) {
+      handleSelectEntry(entry);
+    }
+  };
+
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">Active Redirect Entries</h2>
@@ -147,7 +154,7 @@ const EntryList = ({
             className={`select-none mb-4 p-4 rounded-lg flex flex-col lg:flex-row items-start lg:items-center ${
               selectedEntries.includes(entry) ? 'bg-blue-100' : 'bg-gray-50'
             }`}
-            onClick={() => selectMode && handleSelectEntry(entry)}
+            onClick={() => handleClickEntry(entry)}
           >
             <div className="flex-grow lg:mr-4">
               <p className="font-semibold text-gray-800 break-words">{entry.stream_name}</p>
