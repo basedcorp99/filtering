@@ -14,22 +14,20 @@ const EntryList = ({
   const [selectedEntries, setSelectedEntries] = useState([]);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
+  const [longPressEntry, setLongPressEntry] = useState(null);
 
   useEffect(() => {
     let touchTimeout;
-    let entryElement;
 
     const handleTouchStart = (event) => {
-      entryElement = event.target.closest('li');
-      touchTimeout = setTimeout(() => {
-        if (entryElement) {
-          const entryId = entryElement.dataset.entryId;
-          if (entryId && !selectMode) {
-            setSelectMode(true);
-            handleSelectEntry(entries.find((entry) => entry.id === parseInt(entryId)));
-          }
-        }
-      }, 200); // 200ms threshold for long press
+      const entryElement = event.target.closest('li');
+      if (entryElement) {
+        const entryId = entryElement.dataset.entryId;
+        touchTimeout = setTimeout(() => {
+          setSelectMode(true);
+          setLongPressEntry(entries.find((entry) => entry.id === parseInt(entryId)));
+        }, 200); // 200ms threshold for long press
+      }
     };
 
     const handleTouchEnd = () => {
@@ -43,7 +41,14 @@ const EntryList = ({
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [selectMode, entries]);
+  }, [entries]);
+
+  useEffect(() => {
+    if (longPressEntry) {
+      handleSelectEntry(longPressEntry);
+      setLongPressEntry(null);
+    }
+  }, [longPressEntry]);
 
   const confirmDelete = (entry) => {
     setEntryToDelete(entry);
@@ -152,7 +157,7 @@ const EntryList = ({
             key={entry.id}
             data-entry-id={entry.id}
             className={`select-none mb-4 p-4 rounded-lg flex flex-col lg:flex-row items-start lg:items-center ${
-              selectedEntries.includes(entry) ? 'bg-blue-100' : 'bg-gray-50'
+              selectMode && selectedEntries.includes(entry) ? 'bg-blue-100' : 'bg-gray-50'
             }`}
             onClick={() => handleClickEntry(entry)}
           >
