@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 
 const EntryList = ({
@@ -13,6 +13,36 @@ const EntryList = ({
   const [entryToDelete, setEntryToDelete] = useState(null);
   const [selectedEntries, setSelectedEntries] = useState([]);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
+
+  useEffect(() => {
+    let touchTimeout;
+
+    const handleTouchStart = (event) => {
+      touchTimeout = setTimeout(() => {
+        const entryElement = event.target.closest('li');
+        if (entryElement) {
+          const entryId = entryElement.dataset.entryId;
+          if (entryId && !selectMode) {
+            setSelectMode(true);
+            handleSelectEntry(entries.find((entry) => entry.id === parseInt(entryId)));
+          }
+        }
+      }, 500); // 500ms threshold for long press
+    };
+
+    const handleTouchEnd = () => {
+      clearTimeout(touchTimeout);
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [selectMode, entries]);
 
   const confirmDelete = (entry) => {
     setEntryToDelete(entry);
@@ -61,6 +91,12 @@ const EntryList = ({
     }
   };
 
+  useEffect(() => {
+    if (selectedEntries.length === 0) {
+      setSelectMode(false);
+    }
+  }, [selectedEntries]);
+
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">Active Redirect Entries</h2>
@@ -105,7 +141,14 @@ const EntryList = ({
       </div>
       <ul>
         {entries.map((entry) => (
-          <li key={entry.id} className="mb-4 p-4 bg-gray-50 rounded-lg flex flex-col lg:flex-row items-start lg:items-center">
+          <li
+            key={entry.id}
+            data-entry-id={entry.id}
+            className={`mb-4 p-4 bg-gray-50 rounded-lg flex flex-col lg:flex-row items-start lg:items-center ${
+              selectedEntries.includes(entry) ? 'bg-blue-100' : ''
+            }`}
+            onClick={() => selectMode && handleSelectEntry(entry)}
+          >
             <div className="flex-grow lg:mr-4">
               <p className="font-semibold text-gray-800 break-words">{entry.stream_name}</p>
               <p className="text-gray-600 break-all">{entry.destination_link}</p>
