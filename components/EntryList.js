@@ -144,7 +144,7 @@ const EntryList = ({
           <li
             key={entry.id}
             data-entry-id={entry.id}
-            className={`mb-4 p-4 rounded-lg flex flex-col lg:flex-row items-start lg:items-center ${
+            className={`select-none mb-4 p-4 rounded-lg flex flex-col lg:flex-row items-start lg:items-center ${
               selectedEntries.includes(entry) ? 'bg-blue-100' : 'bg-gray-50'
             }`}
             onClick={() => selectMode && handleSelectEntry(entry)}
