@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const ScriptCodeDialog = ({ currentEntry, handleCloseDialog }) => {
+  const [copied, setCopied] = useState(false);
   const domain = window.location.origin;
-  const snipUrl = `/api/script/${currentEntry.stream_name}`
+  const snipUrl = `/api/script/${currentEntry.stream_name}`;
   const fullUrl = `${domain}/${snipUrl}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(`<script src="${fullUrl}"></script>`);
-    alert('Code copied to clipboard');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000); // Hide the message after 3 seconds
   };
 
   return (
@@ -20,7 +22,7 @@ const ScriptCodeDialog = ({ currentEntry, handleCloseDialog }) => {
           </a>
         </p>
         <div className="flex justify-begin space-x-2">
-        <button
+          <button
             onClick={copyToClipboard}
             className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
           >
@@ -33,6 +35,11 @@ const ScriptCodeDialog = ({ currentEntry, handleCloseDialog }) => {
             Close
           </button>
         </div>
+        {copied && (
+          <div className="mt-4 p-2 bg-green-100 text-green-700 rounded-lg">
+            Code copied to clipboard!
+          </div>
+        )}
       </div>
     </div>
   );
