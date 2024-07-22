@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import AddEntryForm from '../components/AddEntryForm';
-import EntryList from '../components/EntryList';
-import EditEntryDialog from '../components/EditEntryDialog';
-import ScriptCodeDialog from '../components/ScriptCodeDialog';
+import AddEntryForm from './AddEntryForm';
+import EntryList from './EntryList';
+import EditEntryDialog from './EditEntryDialog';
+import ScriptCodeDialog from './ScriptCodeDialog';
 
 const Home = () => {
   const [entries, setEntries] = useState([]);
@@ -23,9 +25,13 @@ const Home = () => {
   }, []);
 
   const fetchEntries = async () => {
-    const response = await axios.get('/api/entries');
-    setEntries(response.data);
-    setFilteredEntries(response.data);
+    try {
+      const response = await axios.get('/api/entries');
+      setEntries(response.data);
+      setFilteredEntries(response.data);
+    } catch (error) {
+      console.error('Failed to fetch entries:', error);
+    }
   };
 
   const handleAddEntry = async ({ streamName, destinationLink, utm, ttclid }) => {
@@ -44,16 +50,11 @@ const Home = () => {
   };
 
   const handleEditEntry = async () => {
-    if (!editStreamName) {
-      setError('Stream Name is required');
-      return;
-    }
-
     try {
       await axios.put(`/api/entries/${currentEntry.id}`, {
         destinationLink: editDestinationLink,
         utm: editUtm,
-        ttclid: editTtclid
+        ttclid: editTtclid,
       });
       fetchEntries();
       handleCloseEditDialog();
@@ -63,8 +64,12 @@ const Home = () => {
   };
 
   const handleDeleteEntry = async (id) => {
-    await axios.delete(`/api/entries/${id}`);
-    fetchEntries();
+    try {
+      await axios.delete(`/api/entries/${id}`);
+      fetchEntries();
+    } catch (error) {
+      console.error('Failed to delete entry:', error);
+    }
   };
 
   const handleOpenDialog = (entry) => {
@@ -138,3 +143,4 @@ const Home = () => {
 };
 
 export default Home;
+
