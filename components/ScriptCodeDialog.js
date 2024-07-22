@@ -4,7 +4,7 @@ const ScriptCodeDialog = ({ currentEntry, handleCloseDialog }) => {
   const [copied, setCopied] = useState(false);
   const domain = window.location.origin;
   const snipUrl = `/api/script/${currentEntry.stream_name}`;
-  const fullUrl = `${domain}/${snipUrl}`;
+  const fullUrl = `${domain}${snipUrl}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(`<script src="${fullUrl}"></script>`);

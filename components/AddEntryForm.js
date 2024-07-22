@@ -5,8 +5,10 @@ const AddEntryForm = ({ onAddEntry, error }) => {
   const [destinationLink, setDestinationLink] = useState('');
   const [utm, setUtm] = useState(false);
   const [ttclid, setTtclid] = useState(false);
+  const [nameError, setNameError] = useState('');
   const [urlError, setUrlError] = useState('');
 
+  const validateStreamName = (name) => /^[a-zA-Z0-9]+$/.test(name);
   const validateUrl = (url) => {
     try {
       new URL(url);
@@ -17,12 +19,19 @@ const AddEntryForm = ({ onAddEntry, error }) => {
   };
 
   const handleAddEntry = () => {
-    if (destinationLink && !validateUrl(destinationLink)) {
-      setUrlError('Invalid URL');
+    setNameError(''); // Clear past errors
+    setUrlError(''); // Clear past errors
+
+    if (!validateStreamName(streamName)) {
+      setNameError('Stream Name can only contain letters and numbers.');
       return;
     }
 
-    setUrlError('');
+    if (destinationLink && !validateUrl(destinationLink)) {
+      setUrlError('Invalid URL.');
+      return;
+    }
+
     onAddEntry({ streamName, destinationLink, utm, ttclid });
     setStreamName('');
     setDestinationLink('');
@@ -32,8 +41,7 @@ const AddEntryForm = ({ onAddEntry, error }) => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-      <h1 className="text-3xl font-bold mb-4 text-gray-800">AnonB v2</h1>
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Add Cloaking Entry</h2>
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">Add Redirect Entry</h2>
       {error && <p className="text-red-500 mb-4">{error}</p>}
       <div className="mb-4">
         <label className="block text-gray-700 mb-2">Stream Name</label>
@@ -43,6 +51,7 @@ const AddEntryForm = ({ onAddEntry, error }) => {
           onChange={(e) => setStreamName(e.target.value)}
           className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        {nameError && <p className="text-red-500">{nameError}</p>}
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 mb-2">Destination Link (optional)</label>
