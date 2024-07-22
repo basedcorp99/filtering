@@ -5,8 +5,24 @@ const AddEntryForm = ({ onAddEntry, error }) => {
   const [destinationLink, setDestinationLink] = useState('');
   const [utm, setUtm] = useState(false);
   const [ttclid, setTtclid] = useState(false);
+  const [urlError, setUrlError] = useState('');
+
+  const validateUrl = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
 
   const handleAddEntry = () => {
+    if (destinationLink && !validateUrl(destinationLink)) {
+      setUrlError('Invalid URL');
+      return;
+    }
+
+    setUrlError('');
     onAddEntry({ streamName, destinationLink, utm, ttclid });
     setStreamName('');
     setDestinationLink('');
@@ -36,6 +52,7 @@ const AddEntryForm = ({ onAddEntry, error }) => {
           onChange={(e) => setDestinationLink(e.target.value)}
           className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        {urlError && <p className="text-red-500">{urlError}</p>}
       </div>
       <div className="mb-4">
         <label className="inline-flex items-center">

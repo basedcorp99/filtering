@@ -6,6 +6,7 @@ import AddEntryForm from './AddEntryForm';
 import EntryList from './EntryList';
 import EditEntryDialog from './EditEntryDialog';
 import ScriptCodeDialog from './ScriptCodeDialog';
+import Spinner from './Spinner';
 
 const Home = () => {
   const [entries, setEntries] = useState([]);
@@ -19,6 +20,8 @@ const Home = () => {
   const [currentEntry, setCurrentEntry] = useState(null);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [selectedEntries, setSelectedEntries] = useState([]);
 
   useEffect(() => {
     fetchEntries();
@@ -31,6 +34,8 @@ const Home = () => {
       setFilteredEntries(response.data);
     } catch (error) {
       console.error('Failed to fetch entries:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,6 +61,43 @@ const Home = () => {
         utm: editUtm,
         ttclid: editTtclid,
       });
+      fetchEntries();
+      handleCloseEditDialog();
+    } catch (error) {
+      setError(error.response?.data?.error || 'An error occurred');
+    }
+  };
+
+  const handleBulkEdit = (entries) => {
+    setSelectedEntries(entries);
+    if (entries.length === 1) {
+      const entry = entries[0];
+      setCurrentEntry(entry);
+      setEditStreamName(entry.stream_name);
+      setEditDestinationLink(entry.destination_link);
+      setEditUtm(entry.utm);
+      setEditTtclid(entry.ttclid);
+      setOpenEditDialog(true);
+    } else {
+      setEditStreamName('');
+      setEditDestinationLink('');
+      setEditUtm(false);
+      setEditTtclid(false);
+      setOpenEditDialog(true);
+    }
+  };
+
+  const handleBulkSave = async () => {
+    try {
+      await Promise.all(
+        selectedEntries.map((entry) =>
+          axios.put(`/api/entries/${entry.id}`, {
+            destinationLink: editDestinationLink || entry.destination_link,
+            utm: editUtm,
+            ttclid: editTtclid,
+          })
+        )
+      );
       fetchEntries();
       handleCloseEditDialog();
     } catch (error) {
@@ -94,6 +136,7 @@ const Home = () => {
   const handleCloseEditDialog = () => {
     setOpenEditDialog(false);
     setCurrentEntry(null);
+    setSelectedEntries([]);
   };
 
   const handleSearch = (query) => {
@@ -113,18 +156,23 @@ const Home = () => {
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="max-w-4xl mx-auto px-6">
         <AddEntryForm onAddEntry={handleAddEntry} error={error} />
-        <EntryList
-          entries={filteredEntries}
-          searchQuery={searchQuery}
-          handleSearch={handleSearch}
-          handleOpenEditDialog={handleOpenEditDialog}
-          handleDeleteEntry={handleDeleteEntry}
-          handleOpenDialog={handleOpenDialog}
-        />
+        {loading ? (
+          <Spinner />
+        ) : (
+          <EntryList
+            entries={filteredEntries}
+            searchQuery={searchQuery}
+            handleSearch={handleSearch}
+            handleOpenEditDialog={handleOpenEditDialog}
+            handleDeleteEntry={handleDeleteEntry}
+            handleOpenDialog={handleOpenDialog}
+            handleBulkEdit={handleBulkEdit}
+          />
+        )}
         {currentEntry && openDialog && (
           <ScriptCodeDialog currentEntry={currentEntry} handleCloseDialog={handleCloseDialog} />
         )}
-        {currentEntry && openEditDialog && (
+        {openEditDialog && (
           <EditEntryDialog
             editStreamName={editStreamName}
             editDestinationLink={editDestinationLink}
@@ -133,7 +181,7 @@ const Home = () => {
             setEditDestinationLink={setEditDestinationLink}
             setEditUtm={setEditUtm}
             setEditTtclid={setEditTtclid}
-            handleEditEntry={handleEditEntry}
+            handleEditEntry={selectedEntries.length > 1 ? handleBulkSave : handleEditEntry}
             handleCloseEditDialog={handleCloseEditDialog}
           />
         )}
@@ -143,4 +191,3 @@ const Home = () => {
 };
 
 export default Home;
-
