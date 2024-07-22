@@ -9,14 +9,8 @@ const AddEntryForm = ({ onAddEntry, error }) => {
   const [urlError, setUrlError] = useState('');
 
   const validateStreamName = (name) => /^[a-zA-Z0-9]+$/.test(name);
-  const validateUrl = (url) => {
-    try {
-      new URL(url);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
+  const validateUrl = (url) =>
+    /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/.test(url);
 
   const handleAddEntry = () => {
     setNameError(''); // Clear past errors
