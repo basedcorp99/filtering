@@ -71,14 +71,14 @@ const EntryList = ({
         placeholder="Search by Stream Name or Destination Link"
         className="w-full mb-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <div className="flex justify-between mb-4">
+      <div className="flex justify-between mb-4 flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
         <button
           onClick={handleSelectAll}
           className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
         >
           {entries.length === selectedEntries.length ? 'Deselect All' : 'Select All'}
         </button>
-        <div className="flex space-x-2">
+        <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
           <button
             onClick={handleBulkEditOpen}
             className={`py-2 px-4 rounded-lg transition duration-200 ${
@@ -105,19 +105,13 @@ const EntryList = ({
       </div>
       <ul>
         {entries.map((entry) => (
-          <li key={entry.id} className="mb-4 p-4 bg-gray-50 rounded-lg flex items-center">
-            <input
-              type="checkbox"
-              checked={selectedEntries.includes(entry)}
-              onChange={() => handleSelectEntry(entry)}
-              className="form-checkbox h-5 w-5 text-blue-600 mr-4"
-            />
+          <li key={entry.id} className="mb-4 p-4 bg-gray-50 rounded-lg flex flex-col lg:flex-row items-start lg:items-center">
             <div className="flex-grow lg:mr-4">
               <p className="font-semibold text-gray-800 break-words">{entry.stream_name}</p>
               <p className="text-gray-600 break-all">{entry.destination_link}</p>
               <p className="text-gray-600">UTM: {entry.utm ? 'Yes' : 'No'}, TTCLID: {entry.ttclid ? 'Yes' : 'No'}</p>
             </div>
-            <div className="flex space-x-2 mt-4 lg:mt-0">
+            <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 mt-4 lg:mt-0 w-full lg:w-auto">
               <button
                 onClick={() => handleOpenEditDialog(entry)}
                 className="bg-yellow-500 text-white py-1 px-3 rounded-lg hover:bg-yellow-600 transition duration-200"

@@ -80,10 +80,10 @@ const AddEntryForm = ({ onAddEntry, error }) => {
         </label>
       </div>
       <button
-        onClick={handleAddEntry}
-        className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
+      onClick={handleAddEntry}
+      className="w-full sm:w-auto bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
       >
-        Add Entry
+      Add Entry
       </button>
     </div>
   );
