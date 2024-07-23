@@ -2,10 +2,12 @@ import React from 'react';
 
 const EditEntryDialog = ({
   editStreamName,
-  editDestinationLink,
+  editSafeLink,
+  editMoneyLink,
   editUtm,
   editTtclid,
-  setEditDestinationLink,
+  setEditSafeLink,
+  setEditMoneyLink,
   setEditUtm,
   setEditTtclid,
   handleEditEntry,
@@ -25,11 +27,20 @@ const EditEntryDialog = ({
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Destination Link</label>
+          <label className="block text-gray-700 mb-2">Safe Link</label>
           <input
             type="text"
-            value={editDestinationLink}
-            onChange={(e) => setEditDestinationLink(e.target.value)}
+            value={editSafeLink}
+            onChange={(e) => setEditSafeLink(e.target.value)}
+            className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2">Money Link</label>
+          <input
+            type="text"
+            value={editMoneyLink}
+            onChange={(e) => setEditMoneyLink(e.target.value)}
             className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

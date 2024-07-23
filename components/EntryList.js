@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import moment from 'moment';  // Ensure you have moment.js installed
 import Modal from './Modal';
+import axios from 'axios';
 
 const EntryList = ({
   entries,
@@ -123,6 +124,16 @@ const EntryList = ({
     handleSelectEntry(entry);
   };
 
+  const handleToggleIsMoney = async (entry, isChecked) => {
+    try {
+      const updatedEntry = { ...entry, money_active: isChecked };
+      await axios.put(`/api/entries/${entry.id}`, updatedEntry);
+      handleRefreshEntries(); // Refresh entries to reflect the change
+    } catch (error) {
+      console.error('Error updating money_active status:', error);
+    }
+  };
+
   const isExpiringSoon = (lastAccess) => {
     const now = moment();
     const lastAccessTime = moment(lastAccess);
@@ -200,13 +211,21 @@ const EntryList = ({
             )}
             <div className="flex-grow lg:mr-4">
               <p className="font-semibold text-gray-800 break-words">{entry.stream_name}</p>
-              <p className="text-gray-600 break-all">{entry.destination_link}</p>
+              <p className="text-gray-600 break-all">Safe URL: {entry.safe_link}</p>
+              <p className="text-gray-600 break-all">Money URL: {entry.money_link}</p>
               <p className="text-gray-600">UTM: {entry.utm ? 'Yes' : 'No'}, TTCLID: {entry.ttclid ? 'Yes' : 'No'}</p>
               {isExpiringSoon(entry.last_access) && (
                 <p className="text-red-500 font-bold">Expiring in less than 12 hours!</p>
               )}
             </div>
             <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 mt-4 lg:mt-0 w-full lg:w-auto">
+            <div className="bg-gray-100 p-2 rounded-lg flex items-center justify-between">
+              <span>Money:</span>
+              <label className="switch ml-2">
+                <input type="checkbox" checked={entry.money_active} onChange={(e) => handleToggleIsMoney(entry, e.target.checked)} />
+                <span className="slider"></span>
+              </label>
+            </div>
               <button
                 onClick={() => handleOpenEditDialog(entry)}
                 className="bg-yellow-500 text-white py-1 px-3 rounded-lg hover:bg-yellow-600 transition duration-200"

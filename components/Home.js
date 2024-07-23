@@ -16,7 +16,8 @@ const Home = () => {
   const [entries, setEntries] = useState([]);
   const [filteredEntries, setFilteredEntries] = useState([]);
   const [editStreamName, setEditStreamName] = useState('');
-  const [editDestinationLink, setEditDestinationLink] = useState('');
+  const [editSafeLink, setEditSafeLink] = useState('');
+  const [editMoneyLink, setEditMoneyLink] = useState('');
   const [editUtm, setEditUtm] = useState(false);
   const [editTtclid, setEditTtclid] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -43,14 +44,14 @@ const Home = () => {
     }
   };
 
-  const handleAddEntry = async ({ streamName, destinationLink, utm, ttclid }) => {
+  const handleAddEntry = async ({ streamName, safeLink, moneyLink, utm, ttclid }) => {
     if (!streamName) {
       setError('Stream Name is required');
       return;
     }
 
     try {
-      await axios.post('/api/entries', { streamName, destinationLink, utm, ttclid });
+      await axios.post('/api/entries', { streamName, safeLink, moneyLink, utm, ttclid });
       fetchEntries();
       setError('');
     } catch (error) {
@@ -59,15 +60,20 @@ const Home = () => {
   };
 
   const handleEditEntry = async () => {
-    if (editDestinationLink && !validateUrl(editDestinationLink)) {
-      setError('Invalid URL.');
+    if (editSafeLink && !validateUrl(editSafeLink)) {
+      setError('Invalid Safe URL.');
+      return;
+    }
+    if (editMoneyLink && !validateUrl(editMoneyLink)) {
+      setError('Invalid Money URL.');
       return;
     }
 
     try {
       await axios.put(`/api/entries/${currentEntry.id}`, {
         stream_name: currentEntry.stream_name,
-        destination_link: editDestinationLink,
+        safe_link: editSafeLink,
+        money_link: editMoneyLink,
         utm: editUtm,
         ttclid: editTtclid,
       });
@@ -84,13 +90,15 @@ const Home = () => {
       const entry = entries[0];
       setCurrentEntry(entry);
       setEditStreamName(entry.stream_name);
-      setEditDestinationLink(entry.destination_link);
+      setEditSafeLink(entry.safe_link);
+      setEditMoneyLink(entry.money_link);
       setEditUtm(entry.utm);
       setEditTtclid(entry.ttclid);
       setOpenEditDialog(true);
     } else {
       setEditStreamName('');
-      setEditDestinationLink('');
+      setEditSafeLink('');
+      setEditMoneyLink('');
       setEditUtm(false);
       setEditTtclid(false);
       setOpenEditDialog(true);
@@ -103,7 +111,8 @@ const Home = () => {
         selectedEntries.map((entry) =>
           axios.put(`/api/entries/${entry.id}`, {
             stream_name: entry.stream_name,
-            destination_link: editDestinationLink || entry.destination_link,
+            safe_link: editSafeLink || entry.safe_link,
+            money_link: editMoneyLink || entry.money_link,
             utm: editUtm,
             ttclid: editTtclid,
           })
@@ -138,7 +147,8 @@ const Home = () => {
   const handleOpenEditDialog = (entry) => {
     setCurrentEntry(entry);
     setEditStreamName(entry.stream_name);
-    setEditDestinationLink(entry.destination_link);
+    setEditSafeLink(entry.safe_link);
+    setEditMoneyLink(entry.money_link);
     setEditUtm(entry.utm);
     setEditTtclid(entry.ttclid);
     setOpenEditDialog(true);
@@ -155,8 +165,9 @@ const Home = () => {
     if (query) {
       const filtered = entries.filter((entry) =>
         entry.stream_name.toLowerCase().includes(query.toLowerCase()) ||
-        entry.destination_link.toLowerCase().includes(query.toLowerCase())
-      );
+        entry.safe_link.toLowerCase().includes(query.toLowerCase()) ||
+        entry.money_link.toLowerCase().includes(query.toLowerCase())
+    );
       setFilteredEntries(filtered);
     } else {
       setFilteredEntries(entries);
@@ -196,10 +207,12 @@ const Home = () => {
         {openEditDialog && (
           <EditEntryDialog
             editStreamName={editStreamName}
-            editDestinationLink={editDestinationLink}
+            editSafeLink={editSafeLink}
+            editMoneyLink={editMoneyLink}
             editUtm={editUtm}
             editTtclid={editTtclid}
-            setEditDestinationLink={setEditDestinationLink}
+            setEditSafeLink={setEditSafeLink}
+            setEditMoneyLink={setEditMoneyLink}
             setEditUtm={setEditUtm}
             setEditTtclid={setEditTtclid}
             handleEditEntry={selectedEntries.length > 1 ? handleBulkSave : handleEditEntry}

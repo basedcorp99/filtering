@@ -3,7 +3,8 @@ import {validateStreamName, validateUrl } from '@lib/validation';
 
 const AddEntryForm = ({ onAddEntry, error }) => {
   const [streamName, setStreamName] = useState('');
-  const [destinationLink, setDestinationLink] = useState('');
+  const [safeLink, setSafeLink] = useState('');
+  const [moneyLink, setMoneyLink] = useState('');
   const [utm, setUtm] = useState(false);
   const [ttclid, setTtclid] = useState(false);
   const [nameError, setNameError] = useState('');
@@ -18,14 +19,19 @@ const AddEntryForm = ({ onAddEntry, error }) => {
       return;
     }
 
-    if (destinationLink && !validateUrl(destinationLink)) {
-      setUrlError('Invalid URL.');
+    if (safeLink && !validateUrl(safeLink)) {
+      setUrlError('Invalid Safe URL.');
+      return;
+    }
+    if (moneyLink && !validateUrl(moneyLink)) {
+      setUrlError('Invalid Money URL.');
       return;
     }
 
-    onAddEntry({ streamName, destinationLink, utm, ttclid });
+    onAddEntry({ streamName, safeLink, moneyLink, utm, ttclid });
     setStreamName('');
-    setDestinationLink('');
+    setSafeLink('');
+    setMoneyLink('');
     setUtm(false);
     setTtclid(false);
   };
@@ -45,11 +51,21 @@ const AddEntryForm = ({ onAddEntry, error }) => {
         {nameError && <p className="text-red-500">{nameError}</p>}
       </div>
       <div className="mb-4">
-        <label className="block text-gray-700 mb-2">Destination Link (optional)</label>
+        <label className="block text-gray-700 mb-2">Safe Link (optional)</label>
         <input
           type="text"
-          value={destinationLink}
-          onChange={(e) => setDestinationLink(e.target.value)}
+          value={safeLink}
+          onChange={(e) => setSafeLink(e.target.value)}
+          className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {urlError && <p className="text-red-500">{urlError}</p>}
+        </div>
+        <div className="mb-4">
+        <label className="block text-gray-700 mb-2">Money Link (optional)</label>
+        <input
+          type="text"
+          value={moneyLink}
+          onChange={(e) => setMoneyLink(e.target.value)}
           className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {urlError && <p className="text-red-500">{urlError}</p>}

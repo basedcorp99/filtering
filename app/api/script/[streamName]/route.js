@@ -22,16 +22,18 @@ export async function GET(request, { params }) {
       });
     }
 
-    const { rows } = await pool.query('SELECT destination_link, utm, ttclid FROM entries WHERE stream_name = $1', [streamName]);
+    const { rows } = await pool.query('SELECT safe_link, money_link, money_active, utm, ttclid FROM entries WHERE stream_name = $1', [streamName]);
     const entry = rows[0];
 
     if (!entry) {
       return NextResponse.error(new Error('Entry not found'));
     }
 
-    const { destination_link, utm, ttclid } = entry;
+    const { safe_link, money_link, money_active, utm, ttclid } = entry;
 
-    if (!destination_link) return new NextResponse('', { status: 200 });
+    const dest_link = money_active ? money_link : safe_link;
+
+    if (!dest_link) return new NextResponse('', { status: 200 });
 
     let scriptContent = '(function() {\n';
 
@@ -50,11 +52,11 @@ export async function GET(request, { params }) {
     if (conditions.length) {
       scriptContent += `
         if (${conditions}) {
-          window.location.href = "${destination_link}";
+          window.location.href = "${dest_link}";
         }\n`;
     } else {
       scriptContent += `
-        window.location.href = "${destination_link}";\n`;
+        window.location.href = "${dest_link}";\n`;
     }
 
     scriptContent += '})();';

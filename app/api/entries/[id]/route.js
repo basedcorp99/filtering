@@ -25,10 +25,10 @@ export async function PUT(request, { params }) {
   const body = await request.json();
 
   try {
-    const { stream_name, destination_link, utm, ttclid } = body;
+    const { stream_name, safe_link, money_link, money_active, utm, ttclid } = body;
     await pool.query(
-      'UPDATE entries SET destination_link = $1, utm = $2, ttclid = $3 WHERE id = $4',
-      [destination_link, utm, ttclid, id]
+      'UPDATE entries SET safe_link = $1, money_link = $2, money_active = $3, utm = $4, ttclid = $5 WHERE id = $6',
+      [safe_link, money_link, money_active, utm, ttclid, id]
     );
     // Invalidate cache
     invalidateCache(stream_name);
