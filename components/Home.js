@@ -186,6 +186,7 @@ const Home = () => {
             handleDeleteEntry={handleDeleteEntry}
             handleOpenDialog={handleOpenDialog}
             handleBulkEdit={handleBulkEdit}
+            handleRefreshEntries={fetchEntries}
           />
         )}
       <AdvancedOptions handleClearCache={handleClearCache} />

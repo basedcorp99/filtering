@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import moment from 'moment';  // Ensure you have moment.js installed
 import Modal from './Modal';
 
 const EntryList = ({
@@ -10,6 +11,7 @@ const EntryList = ({
   handleDeleteEntry,
   handleOpenDialog,
   handleBulkEdit,
+  handleRefreshEntries, // Add this prop for refreshing entries
 }) => {
   const [entryToDelete, setEntryToDelete] = useState(null);
   const [selectedEntries, setSelectedEntries] = useState([]);
@@ -30,7 +32,7 @@ const EntryList = ({
         touchTimeout = setTimeout(() => {
           setSelectMode(true);
           setLongPressEntry(entries.find((entry) => entry.id === parseInt(entryId)));
-        }, 500); // 500ms threshold for long press
+        }, 250); // 250ms threshold for long press
       }
     };
 
@@ -121,9 +123,24 @@ const EntryList = ({
     handleSelectEntry(entry);
   };
 
+  const isExpiringSoon = (lastAccess) => {
+    const now = moment();
+    const lastAccessTime = moment(lastAccess);
+    const hoursDifference = moment.duration(now.diff(lastAccessTime)).asHours();
+    return hoursDifference >= 24 && hoursDifference <= 36; // Entry is expiring in the next 12 hours
+  };
+
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Active Redirect Entries</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">Active Redirect Entries</h2>
+        <button
+          onClick={handleRefreshEntries}
+          className="bg-gray-200 text-gray-700 py-1 px-3 rounded-lg hover:bg-gray-300 transition duration-200"
+        >
+          Refresh
+        </button>
+      </div>
       <input
         type="text"
         value={searchQuery}
@@ -185,6 +202,9 @@ const EntryList = ({
               <p className="font-semibold text-gray-800 break-words">{entry.stream_name}</p>
               <p className="text-gray-600 break-all">{entry.destination_link}</p>
               <p className="text-gray-600">UTM: {entry.utm ? 'Yes' : 'No'}, TTCLID: {entry.ttclid ? 'Yes' : 'No'}</p>
+              {isExpiringSoon(entry.last_access) && (
+                <p className="text-red-500 font-bold">Expiring in less than 12 hours!</p>
+              )}
             </div>
             <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 mt-4 lg:mt-0 w-full lg:w-auto">
               <button
