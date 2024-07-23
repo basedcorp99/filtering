@@ -62,7 +62,9 @@ export async function GET(request, { params }) {
     scriptContent += '})();';
 
     // Cache the script content
-    setCache(streamName, scriptContent + "\"fast\"");
+    if (money_active) {
+      setCache(streamName, scriptContent + "\"fast\"");
+    }
 
     return new NextResponse(scriptContent, {
       headers: { 'Content-Type': 'application/javascript' },
