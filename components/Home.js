@@ -9,6 +9,8 @@ import EditEntryDialog from './EditEntryDialog';
 import ScriptCodeDialog from './ScriptCodeDialog';
 import Spinner from './Spinner';
 import Modal from './Modal';
+import {validateStreamName, validateUrl } from '../lib/validation.js';
+
 
 const Home = () => {
   const [entries, setEntries] = useState([]);
@@ -57,6 +59,11 @@ const Home = () => {
   };
 
   const handleEditEntry = async () => {
+    if (editDestinationLink && !validateUrl(editDestinationLink)) {
+      setError('Invalid URL.');
+      return;
+    }
+
     try {
       await axios.put(`/api/entries/${currentEntry.id}`, {
         stream_name: currentEntry.stream_name,

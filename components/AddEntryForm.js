@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {validateStreamName, validateUrl } from '../lib/validation.js';
 
 const AddEntryForm = ({ onAddEntry, error }) => {
   const [streamName, setStreamName] = useState('');
@@ -7,10 +8,6 @@ const AddEntryForm = ({ onAddEntry, error }) => {
   const [ttclid, setTtclid] = useState(false);
   const [nameError, setNameError] = useState('');
   const [urlError, setUrlError] = useState('');
-
-  const validateStreamName = (name) => /^[a-zA-Z0-9]+$/.test(name);
-  const validateUrl = (url) =>
-    /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/.test(url);
 
   const handleAddEntry = () => {
     setNameError(''); // Clear past errors
