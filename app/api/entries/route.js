@@ -15,7 +15,7 @@ export async function POST(request) {
 
   try {
     await pool.query(
-      'INSERT INTO entries (stream_name, destination_link, utm, ttclid) VALUES ($1, $2, $3, $4)',
+      'INSERT INTO entries (stream_name, destination_link, utm, ttclid, last_access) VALUES ($1, $2, $3, $4, NOW())',
       [streamName, destinationLink, utm, ttclid]
     );
     return NextResponse.json({ success: true });

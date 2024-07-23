@@ -6,6 +6,14 @@ export async function GET(request, { params }) {
   const { streamName } = params;
 
   try {
+      // Perform asynchronous database update
+      pool.query(
+        'UPDATE entries SET last_access = NOW() WHERE stream_name = $1',
+        [streamName]
+      ).catch(error => {
+        console.error('Failed to update last access time:', error);
+      });
+
     // Check LRU cache first
     const cachedScript = getCache(streamName);
     if (cachedScript) {
@@ -57,6 +65,7 @@ export async function GET(request, { params }) {
     return new NextResponse(scriptContent, {
       headers: { 'Content-Type': 'application/javascript' },
     });
+
   } catch (error) {
     return NextResponse.error(new Error(error.message));
   }
