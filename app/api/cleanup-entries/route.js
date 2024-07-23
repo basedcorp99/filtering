@@ -1,18 +1,22 @@
 import { NextResponse } from 'next/server';
 import pool from '@lib/db';
 
-export async function GET() {
+export default async function handler(req, res) {
+  if (req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
+    return res.status(401).end('Unauthorized');
+  }
+
   try {
     const query = `
-      DELETE FROM redirects
+      DELETE FROM entries
       WHERE last_access < NOW() - INTERVAL '36 hours';
     `;
 
     await pool.query(query);
 
-    return NextResponse.json({ message: 'Old entries deleted successfully' });
+    return res.status(200).json({ message: 'Old entries deleted successfully' });
   } catch (error) {
     console.error('Error deleting old entries:', error);
-    return NextResponse.error(new Error('Failed to delete old entries'));
+    return res.status(500).json({ error: 'Failed to delete old entries' });
   }
 }
