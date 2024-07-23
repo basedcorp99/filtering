@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import AdvancedOptions from './AdvancedOptions';
 import AddEntryForm from './AddEntryForm';
 import EntryList from './EntryList';
 import EditEntryDialog from './EditEntryDialog';
 import ScriptCodeDialog from './ScriptCodeDialog';
 import Spinner from './Spinner';
+import Modal from './Modal';
 
 const Home = () => {
   const [entries, setEntries] = useState([]);
@@ -57,15 +59,16 @@ const Home = () => {
   const handleEditEntry = async () => {
     try {
       await axios.put(`/api/entries/${currentEntry.id}`, {
-        destinationLink: editDestinationLink,
+        stream_name: currentEntry.stream_name,
+        destination_link: editDestinationLink,
         utm: editUtm,
         ttclid: editTtclid,
       });
-      fetchEntries();
-      handleCloseEditDialog();
     } catch (error) {
       setError(error.response?.data?.error || 'An error occurred');
     }
+    fetchEntries();
+    handleCloseEditDialog();
   };
 
   const handleBulkEdit = (entries) => {
@@ -92,7 +95,8 @@ const Home = () => {
       await Promise.all(
         selectedEntries.map((entry) =>
           axios.put(`/api/entries/${entry.id}`, {
-            destinationLink: editDestinationLink || entry.destination_link,
+            stream_name: entry.stream_name,
+            destination_link: editDestinationLink || entry.destination_link,
             utm: editUtm,
             ttclid: editTtclid,
           })
@@ -152,6 +156,14 @@ const Home = () => {
     }
   };
 
+  const handleClearCache = async () => {
+    try {
+      const response = await axios.post('/api/clear-cache');
+    } catch (error) {
+      console.error('Failed to clear cache:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="max-w-4xl mx-auto px-6">
@@ -169,7 +181,8 @@ const Home = () => {
             handleBulkEdit={handleBulkEdit}
           />
         )}
-        {currentEntry && openDialog && (
+      <AdvancedOptions handleClearCache={handleClearCache} />
+      {currentEntry && openDialog && (
           <ScriptCodeDialog currentEntry={currentEntry} handleCloseDialog={handleCloseDialog} />
         )}
         {openEditDialog && (
@@ -183,6 +196,15 @@ const Home = () => {
             setEditTtclid={setEditTtclid}
             handleEditEntry={selectedEntries.length > 1 ? handleBulkSave : handleEditEntry}
             handleCloseEditDialog={handleCloseEditDialog}
+          />
+        )}
+        {error && (
+          <Modal
+            title="Error"
+            description={error}
+            confirmText="OK"
+            onConfirm={() => setError('')}
+            onCancel={() => setError('')}
           />
         )}
       </div>

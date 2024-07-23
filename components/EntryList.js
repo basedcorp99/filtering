@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import Modal from './Modal';
 
 const EntryList = ({
@@ -15,8 +16,11 @@ const EntryList = ({
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [longPressEntry, setLongPressEntry] = useState(null);
+  const isLargeScreen = useMediaQuery({ query: '(min-width: 1024px)' });
 
   useEffect(() => {
+    if (isLargeScreen) return;
+
     let touchTimeout;
 
     const handleTouchStart = (event) => {
@@ -26,7 +30,7 @@ const EntryList = ({
         touchTimeout = setTimeout(() => {
           setSelectMode(true);
           setLongPressEntry(entries.find((entry) => entry.id === parseInt(entryId)));
-        }, 200); // 200ms threshold for long press
+        }, 500); // 500ms threshold for long press
       }
     };
 
@@ -41,7 +45,7 @@ const EntryList = ({
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [entries]);
+  }, [isLargeScreen, entries]);
 
   useEffect(() => {
     if (longPressEntry) {
@@ -74,7 +78,11 @@ const EntryList = ({
   };
 
   const handleSelectAll = () => {
-    setSelectedEntries(entries.length === selectedEntries.length ? [] : entries);
+    const allSelected = entries.length === selectedEntries.length;
+    setSelectedEntries(allSelected ? [] : entries);
+    if (!isLargeScreen) {
+      setSelectMode(!allSelected);  // Ensure select mode is enabled when selecting all
+    }
   };
 
   const handleBulkDelete = () => {
@@ -107,6 +115,10 @@ const EntryList = ({
     if (selectMode) {
       handleSelectEntry(entry);
     }
+  };
+
+  const handleCheckboxChange = (entry) => {
+    handleSelectEntry(entry);
   };
 
   return (
@@ -157,10 +169,18 @@ const EntryList = ({
             key={entry.id}
             data-entry-id={entry.id}
             className={`select-none mb-4 p-4 rounded-lg flex flex-col lg:flex-row items-start lg:items-center ${
-              selectMode && selectedEntries.includes(entry) ? 'bg-blue-100' : 'bg-gray-50'
+              !isLargeScreen && selectMode && selectedEntries.includes(entry) ? 'bg-blue-100' : 'bg-gray-50'
             }`}
             onClick={() => handleClickEntry(entry)}
           >
+            {isLargeScreen && (
+              <input
+                type="checkbox"
+                checked={selectedEntries.includes(entry)}
+                onChange={() => handleCheckboxChange(entry)}
+                className="mr-6 w-6 h-6 lg:w-6 lg:h-6"
+              />
+            )}
             <div className="flex-grow lg:mr-4">
               <p className="font-semibold text-gray-800 break-words">{entry.stream_name}</p>
               <p className="text-gray-600 break-all">{entry.destination_link}</p>

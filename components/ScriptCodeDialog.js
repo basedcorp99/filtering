@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
+import TemporaryMessage from './TemporaryMessage';
 
 const ScriptCodeDialog = ({ currentEntry, handleCloseDialog }) => {
-  const [copied, setCopied] = useState(false);
+  const [message, setMessage] = useState('');
+  const [message_is_err, setMessageErr] = useState('');
   const domain = window.location.origin;
   const snipUrl = `/api/script/${currentEntry.stream_name}`;
   const fullUrl = `${domain}${snipUrl}`;
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(`<script src="${fullUrl}"></script>`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000); // Hide the message after 3 seconds
+    // Ensure the document is focused before attempting to copy
+    setTimeout(() => {
+      navigator.clipboard.writeText(`<script src="${fullUrl}"></script>`)
+        .then(() => {
+          setMessage('Code copied to clipboard!');
+        })
+        .catch(err => {
+          console.error('Failed to copy: ', err);
+          setMessage('Failed to copy code to clipboard');
+          setMessageErr(true);
+        });
+    }, 0);
   };
 
   return (
@@ -35,11 +46,7 @@ const ScriptCodeDialog = ({ currentEntry, handleCloseDialog }) => {
             Close
           </button>
         </div>
-        {copied && (
-          <div className="mt-4 p-2 bg-green-100 text-green-700 rounded-lg">
-            Code copied to clipboard!
-          </div>
-        )}
+        <TemporaryMessage message={message} is_err={message_is_err}/>
       </div>
     </div>
   );

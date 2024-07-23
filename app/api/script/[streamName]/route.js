@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server';
 import pool from '../../../../lib/db';
+import { getCache, setCache } from '../../../../lib/cache';
 
 export async function GET(request, { params }) {
   const { streamName } = params;
 
   try {
-    const { rows } = await pool.query('SELECT * FROM entries WHERE stream_name = $1', [streamName]);
+    // Check LRU cache first
+    const cachedScript = getCache(streamName);
+    if (cachedScript) {
+      return new NextResponse(cachedScript, {
+        headers: { 'Content-Type': 'application/javascript' },
+      });
+    }
+
+    const { rows } = await pool.query('SELECT destination_link, utm, ttclid FROM entries WHERE stream_name = $1', [streamName]);
     const entry = rows[0];
 
     if (!entry) {
@@ -42,7 +51,12 @@ export async function GET(request, { params }) {
 
     scriptContent += '})();';
 
-    return new NextResponse(scriptContent, { headers: { 'Content-Type': 'application/javascript' } });
+    // Cache the script content
+    setCache(streamName, scriptContent + "\"fast\"");
+
+    return new NextResponse(scriptContent, {
+      headers: { 'Content-Type': 'application/javascript' },
+    });
   } catch (error) {
     return NextResponse.error(new Error(error.message));
   }
