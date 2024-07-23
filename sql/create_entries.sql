@@ -1,0 +1,8 @@
+CREATE TABLE redirects (
+    id SERIAL PRIMARY KEY,
+    stream_name VARCHAR(255) NOT NULL,
+    destination_link VARCHAR(255),
+    utm BOOLEAN DEFAULT FALSE,
+    ttclid BOOLEAN DEFAULT FALSE,
+    last_access TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
