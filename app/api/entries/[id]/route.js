@@ -30,7 +30,7 @@ export async function PUT(request, { params }) {
       'UPDATE entries SET destination_link = $1, utm = $2, ttclid = $3 WHERE id = $4',
       [destination_link, utm, ttclid, id]
     );
-    // Invalidate the cache for the updated stream_name
+    // Invalidate cache
     invalidateCache(stream_name);
 
     return NextResponse.json({ success: true });
