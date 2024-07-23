@@ -11,12 +11,12 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  const { streamName, safe_link, money_link, utm, ttclid } = await request.json();
+  const { streamName, safeLink, moneyLink, utm, ttclid } = await request.json();
 
   try {
     await pool.query(
       'INSERT INTO entries (stream_name, safe_link, money_link, utm, ttclid, last_access) VALUES ($1, $2, $3, $4, $5, NOW())',
-      [streamName, safe_link, money_link, utm, ttclid]
+      [streamName, safeLink, moneyLink, utm, ttclid]
     );
     return NextResponse.json({ success: true });
   } catch (error) {
