@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {validateStreamName, validateUrl } from '@lib/validation';
+import { validateStreamName, validateUrl } from '@lib/validation';
 
 const AddEntryForm = ({ onAddEntry, error }) => {
   const [streamName, setStreamName] = useState('');
@@ -8,11 +8,13 @@ const AddEntryForm = ({ onAddEntry, error }) => {
   const [utm, setUtm] = useState(false);
   const [ttclid, setTtclid] = useState(false);
   const [nameError, setNameError] = useState('');
-  const [urlError, setUrlError] = useState('');
+  const [safeLinkError, setSafeLinkError] = useState('');
+  const [moneyLinkError, setMoneyLinkError] = useState('');
 
   const handleAddEntry = () => {
     setNameError(''); // Clear past errors
-    setUrlError(''); // Clear past errors
+    setSafeLinkError(''); // Clear past errors
+    setMoneyLinkError(''); // Clear past errors
 
     if (!validateStreamName(streamName)) {
       setNameError('Stream Name can only contain letters and numbers.');
@@ -20,11 +22,12 @@ const AddEntryForm = ({ onAddEntry, error }) => {
     }
 
     if (safeLink && !validateUrl(safeLink)) {
-      setUrlError('Invalid Safe URL.');
+      setSafeLinkError('Invalid Safe URL.');
       return;
     }
+
     if (moneyLink && !validateUrl(moneyLink)) {
-      setUrlError('Invalid Money URL.');
+      setMoneyLinkError('Invalid Money URL.');
       return;
     }
 
@@ -58,9 +61,9 @@ const AddEntryForm = ({ onAddEntry, error }) => {
           onChange={(e) => setSafeLink(e.target.value)}
           className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        {urlError && <p className="text-red-500">{urlError}</p>}
-        </div>
-        <div className="mb-4">
+        {safeLinkError && <p className="text-red-500">{safeLinkError}</p>}
+      </div>
+      <div className="mb-4">
         <label className="block text-gray-700 mb-2">Money Link (optional)</label>
         <input
           type="text"
@@ -68,7 +71,7 @@ const AddEntryForm = ({ onAddEntry, error }) => {
           onChange={(e) => setMoneyLink(e.target.value)}
           className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        {urlError && <p className="text-red-500">{urlError}</p>}
+        {moneyLinkError && <p className="text-red-500">{moneyLinkError}</p>}
       </div>
       <div className="mb-4">
         <label className="inline-flex items-center">
@@ -93,10 +96,10 @@ const AddEntryForm = ({ onAddEntry, error }) => {
         </label>
       </div>
       <button
-      onClick={handleAddEntry}
-      className="w-full sm:w-auto bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
+        onClick={handleAddEntry}
+        className="w-full sm:w-auto bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
       >
-      Add Entry
+        Add Entry
       </button>
     </div>
   );
