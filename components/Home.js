@@ -9,7 +9,7 @@ import EditEntryDialog from './EditEntryDialog';
 import ScriptCodeDialog from './ScriptCodeDialog';
 import Spinner from './Spinner';
 import Modal from './Modal';
-import {validateStreamName, validateUrl } from '@lib/validation';
+import { validateUrl } from '@lib/validation';
 
 
 const Home = () => {
