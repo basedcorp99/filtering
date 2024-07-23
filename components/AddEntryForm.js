@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {validateStreamName, validateUrl } from '../lib/validation.js';
+import {validateStreamName, validateUrl } from '../lib/validation';
 
 const AddEntryForm = ({ onAddEntry, error }) => {
   const [streamName, setStreamName] = useState('');
