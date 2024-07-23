@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { emptyCache } from '../../../lib/cache';
+import { emptyCache } from '@lib/cache';
 
 export async function POST() {
   emptyCache();

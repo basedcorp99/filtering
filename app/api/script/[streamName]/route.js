@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../../lib/db';
-import { getCache, setCache } from '../../../../lib/cache';
+import pool from '@lib/db';
+import { getCache, setCache } from '@lib/cache';
 
 export async function GET(request, { params }) {
   const { streamName } = params;
