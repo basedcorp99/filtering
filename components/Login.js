@@ -13,7 +13,7 @@ const Login = () => {
       if (password === validPassword) {
         setAuthenticated(true);
       } else {
-        alert('Invalid credentials');
+        alert('Go back to glitchy, nerd.');
       }
     };
 
