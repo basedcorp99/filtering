@@ -74,6 +74,7 @@ const Home = () => {
         stream_name: currentEntry.stream_name,
         safe_link: editSafeLink,
         money_link: editMoneyLink,
+        money_active: currentEntry.money_active,
         utm: editUtm,
         ttclid: editTtclid,
       });
