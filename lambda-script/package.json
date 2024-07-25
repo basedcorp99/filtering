@@ -1,0 +1,11 @@
+{
+    "name": "lambda-script",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "aws-serverless-express": "^3.4.0",
+        "express": "^4.19.2",
+        "lru-cache": "^11.0.0",
+        "pg": "^8.12.0"
+    }
+}

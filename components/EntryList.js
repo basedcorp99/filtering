@@ -128,6 +128,7 @@ const EntryList = ({
     try {
       const updatedEntry = { ...entry, money_active: isChecked };
       await axios.put(`/api/entries/${entry.id}`, updatedEntry);
+      await axios.delete(`${NEXT_PUBLIC_AWS_ENDPOINT}/script/${entry.id}`);
       handleRefreshEntries(); // Refresh entries to reflect the change
     } catch (error) {
       console.error('Error updating money_active status:', error);
