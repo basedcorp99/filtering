@@ -1,9 +1,17 @@
 const express = require('express');
 const { Pool } = require('pg');
 const { LRUCache } = require('lru-cache');
+const cors = require('cors'); // Import cors
 
 // Set up Express app
 const app = express();
+
+// Use cors middleware
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // Set up PostgreSQL pool
 const pool = new Pool({
@@ -82,26 +90,24 @@ app.get('/script/:proxy', async (req, res) => {
       cache.set(streamName, scriptContent + "\"fast\"");
     }
 
-    return res.set({'Content-Type': 'application/javascript',
-                    'Access-Control-Allow-Origin': '*'
-                    }).send(scriptContent);
+    return res.set('Content-Type', 'application/javascript').send(scriptContent);
 
   } catch (error) {
     console.error(error);
-    return res.set({"Access-Control-Allow-Origin": '*'}).status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 });
 
 app.delete('/script/:proxy', async (req, res) => {
   const streamName = req.params.proxy;
   cache.delete(streamName);
-  return res.set({'Access-Control-Allow-Origin': '*'}).status(200);
-
+  return res.status(204).send();
 });
 
-app.delete('/script/', async (req, res) => {
+app.delete('/cache/clear', async (req, res) => {
   cache.clear();
-  return res.set({'Access-Control-Allow-Origin': '*'}).status(200);
+  return res.status(204).send();
 });
+
 
 module.exports = app;

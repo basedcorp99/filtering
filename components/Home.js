@@ -178,7 +178,7 @@ const Home = () => {
   const handleClearCache = async () => {
     try {
       await axios.post('/api/clear-cache');
-      await axios.delete(`${process.env.NEXT_PUBLIC_AWS_ENDPOINT}/script/`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_AWS_ENDPOINT}/cache/clear`);
     } catch (error) {
       console.error('Failed to clear cache:', error);
     }
