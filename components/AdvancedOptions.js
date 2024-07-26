@@ -18,7 +18,7 @@ const AdvancedOptions = ({ handleClearCache }) => {
       >
         Clear Cache
       </button>
-      </div>
+    </div>
   );
 };
 
