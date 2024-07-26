@@ -82,21 +82,26 @@ app.get('/script/:proxy', async (req, res) => {
       cache.set(streamName, scriptContent + "\"fast\"");
     }
 
-    return res.set('Content-Type', 'application/javascript').send(scriptContent);
+    return res.set({'Content-Type': 'application/javascript',
+                    'Access-Control-Allow-Origin': '*'
+                    }).send(scriptContent);
 
   } catch (error) {
     console.error(error);
-    return res.status(500).send(error.message);
+    return res.set({"Access-Control-Allow-Origin": '*'}).status(500).send(error.message);
   }
 });
 
 app.delete('/script/:proxy', async (req, res) => {
   const streamName = req.params.proxy;
   cache.delete(streamName);
+  return res.set({'Access-Control-Allow-Origin': '*'}).status(200);
+
 });
 
 app.delete('/script/', async (req, res) => {
   cache.clear();
+  return res.set({'Access-Control-Allow-Origin': '*'}).status(200);
 });
 
 module.exports = app;
