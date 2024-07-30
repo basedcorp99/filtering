@@ -78,6 +78,7 @@ const Home = () => {
         utm: editUtm,
         ttclid: editTtclid,
       });
+      axios.delete(`${process.env.NEXT_PUBLIC_AWS_ENDPOINT}/script/${currentEntry.stream_name}`);
     } catch (error) {
       setError(error.response?.data?.error || 'An error occurred');
     }
@@ -119,6 +120,12 @@ const Home = () => {
           })
         )
       );
+      // Invalidate AWS without awaiting
+      selectedEntries.forEach((entry) => {
+        axios.delete(`${process.env.NEXT_PUBLIC_AWS_ENDPOINT}/script/${entry.stream_name}`).catch(err => {
+          console.error(`Failed to clear cache on AWS for ${entry.stream_name}:`, err);
+        });
+    });
       fetchEntries();
       handleCloseEditDialog();
     } catch (error) {
