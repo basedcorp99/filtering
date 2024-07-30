@@ -3,7 +3,7 @@ import pool from '@lib/db';
 
 export async function GET() {
   try {
-    const { rows } = await pool.query('SELECT * FROM entries');
+    const { rows } = await pool.query('SELECT * FROM entries ORDER BY stream_name ASC');
     return NextResponse.json(rows);
   } catch (error) {
     return NextResponse.error(new Error(error.message));
