@@ -214,7 +214,7 @@ const EntryList = ({
               <p className="font-semibold text-gray-800 break-words">{entry.stream_name}</p>
               <p className="text-gray-600 break-all">Safe URL: {entry.safe_link}</p>
               <p className="text-gray-600 break-all">Money URL: {entry.money_link}</p>
-              <p className="text-gray-600">UTM: {entry.utm ? 'Yes' : 'No'}, TTCLID: {entry.ttclid ? 'Yes' : 'No'}</p>
+              <p className="text-gray-600">UTM: <b>{entry.utm ? 'Yes' : 'No'}</b>, TTCLID: <b>{entry.ttclid ? 'Yes' : 'No'}</b></p>
               {isExpiringSoon(entry.last_access) && (
                 <p className="text-red-500 font-bold">Expiring in less than 12 hours!</p>
               )}
