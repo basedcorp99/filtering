@@ -4,7 +4,7 @@ import TemporaryMessage from './TemporaryMessage';
 const ScriptCodeDialog = ({ currentEntry, handleCloseDialog }) => {
   const [message, setMessage] = useState('');
   const [message_is_err, setMessageErr] = useState('');
-  const [domainType, setDomainType] = useState('standard');
+  const [domainType, setDomainType] = useState('aws');
 
   const domain = domainType === 'aws' ? process.env.NEXT_PUBLIC_AWS_ENDPOINT : window.location.origin + "/api";
   const snipUrl = `/script/${currentEntry.stream_name}`;
@@ -45,8 +45,8 @@ const ScriptCodeDialog = ({ currentEntry, handleCloseDialog }) => {
             onChange={handleDomainChange}
             className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="standard">Standard</option>
-            <option value="aws">Amazon AWS (beta)</option>
+            <option value="aws">Amazon AWS</option>
+            <option value="standard">Standard (fallback)</option>
           </select>
         </div>
         <div className="flex justify-begin space-x-2">
